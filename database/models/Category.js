@@ -9,9 +9,6 @@ function categoriesData (sequelize, DataTypes) {
     },
     name: {
       type: DataTypes.STRING
-    },
-    created_at: {
-      type: DataTypes.DATE
     }
   }
 
