@@ -12,7 +12,9 @@ const productSchema = z.object({
   price: z.number({
     required_error: 'Price is required'
   }).nonnegative(),
-  image: z.string()
+  category: z.number({
+    required_error: 'Category is required'
+  })
 })
 
 function validateProduct (input) {

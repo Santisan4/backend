@@ -25,6 +25,9 @@ function productsData (sequelize, DataTypes) {
     stock: {
       type: DataTypes.INTEGER
     },
+    category_id: {
+      type: DataTypes.INTEGER
+    },
     created_at: {
       type: DataTypes.DATE
     }

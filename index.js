@@ -1,9 +1,9 @@
 const express = require('express')
 const cors = require('cors')
-const path = require('node:path')
 
 const productRouter = require('./routes/product.js')
 const userRouter = require('./routes/user.js')
+const adminRouter = require('./routes/admin.js')
 
 const app = express()
 app.use(cors({
@@ -24,15 +24,9 @@ app.use(cors({
   }
 }))
 app.use(express.json())
+app.use('/admin', adminRouter)
 app.use('/user', userRouter)
 app.use('/product', productRouter)
-
-// Serve static assets if in production
-const __dirname = path.resolve()
-app.use(express.static(path.join(__dirname, '/frontend/build')))
-app.get('*', (req, res) =>
-  res.sendFile(path.join(__dirname, '/frontend/build/index.html'))
-)
 
 // 404 not found
 app.use((req, res, next) => {

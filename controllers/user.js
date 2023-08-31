@@ -7,7 +7,6 @@ const jwt = require('jsonwebtoken')
 const userController = {
   create: async (req, res) => {
     try {
-      console.log(req.body)
       const result = validateUser(req.body)
 
       if (result.error) {
@@ -52,6 +51,8 @@ const userController = {
   login: (req, res) => {
     const { email, password } = req.body
 
+    console.log(req.body)
+
     db.users.findOne({
       where: {
         email
@@ -67,7 +68,8 @@ const userController = {
         const userForToken = {
           id: user.dataValues.id,
           name: user.dataValues.name,
-          email: user.dataValues.email
+          email: user.dataValues.email,
+          admin: user.dataValues.admin
         }
 
         const token = jwt.sign(userForToken, process.env.SECRET)
@@ -76,6 +78,7 @@ const userController = {
           id: userForToken.id,
           name: userForToken.name,
           email: userForToken.email,
+          admin: user.dataValues.admin,
           token
         })
       })

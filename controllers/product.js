@@ -1,3 +1,4 @@
+const jwt = require('jsonwebtoken')
 const db = require('../database/models/index.js')
 const { validateProduct } = require('../middleware/validations/product.js')
 const { uploadFile, deleteImage } = require('../utils/cloudinary.js')
@@ -88,6 +89,19 @@ const productController = {
         image: req.file.path
       }
 
+      const authorization = req.get('authorization')
+      let token = null
+
+      if (authorization && authorization.toLowerCase().startsWith('bearer')) {
+        token = authorization.substring(7)
+      }
+
+      const decodedToken = jwt.verify(token, process.env.SECRET)
+
+      if (!token || !decodedToken.id) {
+        return res.status(401).json({ error: 'token missing or invalid' })
+      }
+
       const result = validateProduct(reqBody)
 
       if (result.error) {
@@ -107,7 +121,8 @@ const productController = {
           const imageID = Number(image.dataValues.id)
           const newProduct = {
             ...result.data,
-            image_id: imageID
+            image_id: imageID,
+            stock: 1
           }
 
           db.products.create(newProduct)
