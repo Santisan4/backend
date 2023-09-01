@@ -6,25 +6,25 @@ const userRouter = require('./routes/user.js')
 const adminRouter = require('./routes/admin.js')
 
 const app = express()
-app.use(cors({
-  origin: (origin, callback) => {
-    const ACCEPTED_ORIGINS = [
-      'https://tiendaeos.vercel.app',
-      'http://localhost:5173'
-    ]
+// app.use(cors({
+//   origin: (origin, callback) => {
+//     const ACCEPTED_ORIGINS = [
+//       'https://tiendaeos.vercel.app',
+//       'http://localhost:5173'
+//     ]
 
-    if (ACCEPTED_ORIGINS.includes(origin)) {
-      return callback(null, true)
-    }
+//     if (ACCEPTED_ORIGINS.includes(origin)) {
+//       return callback(null, true)
+//     }
 
-    if (!origin) {
-      return callback(null, true)
-    }
+//     if (!origin) {
+//       return callback(null, true)
+//     }
 
-    return callback(new Error('Not allowed by CORS'))
-  }
-}))
-// app.use(cors())
+//     return callback(new Error('Not allowed by CORS'))
+//   }
+// }))
+app.use(cors())
 app.use(express.json())
 app.use('/admin', adminRouter)
 app.use('/user', userRouter)
