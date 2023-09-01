@@ -56,10 +56,13 @@ const userController = {
         email
       }
     })
-      .then(user => {
-        const passwordMatch = bcrypt.compareSync(password, user.password)
-        if (user === null || !passwordMatch) {
-          return res.status(400).json({ error: 'Invalid user or password' })
+      .then(async user => {
+        const passwordCorrect = user === null
+          ? false
+          : await bcrypt.compare(password, user.password)
+
+        if (!(user && passwordCorrect)) {
+          return res.status(401).json({ error: 'Invalid user or password' })
         }
 
         const userForToken = {
@@ -69,9 +72,9 @@ const userController = {
           admin: user.dataValues.admin
         }
 
-        const token = jwt.sign(userForToken, process.env.SECRET)
+        const token = jwt.sign(userForToken, process.env.SECRET, { expiresIn: 60 * 60 * 24 * 7 })
 
-        return res.status(200).send({
+        return res.status(200).json({
           id: userForToken.id,
           name: userForToken.name,
           email: userForToken.email,
