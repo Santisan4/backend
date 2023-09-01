@@ -9,7 +9,8 @@ const app = express()
 app.use(cors({
   origin: (origin, callback) => {
     const ACCEPTED_ORIGINS = [
-      'https://tiendaeos.vercel.app/'
+      'https://tiendaeos.vercel.app/',
+      'http://localhost:5173'
     ]
 
     if (ACCEPTED_ORIGINS.includes(origin)) {
