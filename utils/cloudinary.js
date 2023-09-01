@@ -9,9 +9,16 @@ cloudinary.config({
 })
 
 async function uploadFile (file) {
-  return await cloudinary.uploader.upload(file, {
-    folder: '/tienda/products'
-  })
+  const env = process.env.NODE_ENV === 'development'
+  if (env === 'development') {
+    return await cloudinary.uploader.upload(file, {
+      folder: '/development/tienda/products'
+    })
+  } else {
+    return await cloudinary.uploader.upload(file, {
+      folder: '/tienda/products'
+    })
+  }
 }
 
 async function deleteImage (publicId) {
