@@ -32,7 +32,7 @@ const userController = {
           name: result.data.name,
           email: result.data.email,
           password: passwordHash,
-          admin: 2
+          admin: 0
         }
 
         db.users.create(newUser)
