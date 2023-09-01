@@ -96,7 +96,7 @@ const productController = {
         token = authorization.substring(7)
       }
 
-      const decodedToken = jwt.verify(token, process.env.SECRET)
+      const decodedToken = jwt.verify(token, 'teomilo')
 
       if (!token || !decodedToken.id) {
         return res.status(401).json({ error: 'token missing or invalid' })

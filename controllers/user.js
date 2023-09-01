@@ -72,7 +72,7 @@ const userController = {
           admin: user.dataValues.admin
         }
 
-        const token = jwt.sign(userForToken, process.env.SECRET, { expiresIn: 60 * 60 * 24 * 7 })
+        const token = jwt.sign(userForToken, 'teomilo', { expiresIn: 60 * 60 * 24 * 7 })
 
         return res.status(200).json({
           id: userForToken.id,
