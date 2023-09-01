@@ -20,7 +20,7 @@ const userController = {
       })
 
       if (userToCreate) {
-        return res.status(400).json({ error: 'User already exists' })
+        return res.status(400).json({ error: 'Email already exists' })
       }
 
       bcrypt.hash(req.body.password, 10, (err, passwordHash) => {
@@ -51,17 +51,14 @@ const userController = {
   login: (req, res) => {
     const { email, password } = req.body
 
-    console.log(req.body)
-
     db.users.findOne({
       where: {
         email
       }
     })
-      .then(user => {
-        console.log(user.dataValues)
-        const passwordMatch = bcrypt.compare(password, user.password)
-        if (!(user && passwordMatch)) {
+      .then(async user => {
+        const passwordMatch = await bcrypt.compare(password, user.password)
+        if (user === null || !passwordMatch) {
           return res.status(400).json({ error: 'Invalid user or password' })
         }
 
@@ -83,7 +80,7 @@ const userController = {
         })
       })
       .catch(err => {
-        return res.status(400).json({ error: err })
+        return res.status(400).json({ error: 'email does not exists' })
       })
   },
 

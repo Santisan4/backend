@@ -23,10 +23,11 @@ app.use(cors({
     return callback(new Error('Not allowed by CORS'))
   }
 }))
+// app.use(cors())
 app.use(express.json())
 app.use('/admin', adminRouter)
 app.use('/user', userRouter)
-app.use('/product', productRouter)
+app.use('/products', productRouter)
 
 // 404 not found
 app.use((req, res, next) => {
