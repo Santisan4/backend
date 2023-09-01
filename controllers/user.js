@@ -56,8 +56,8 @@ const userController = {
         email
       }
     })
-      .then(async user => {
-        const passwordMatch = await bcrypt.compare(password, user.password)
+      .then(user => {
+        const passwordMatch = bcrypt.compareSync(password, user.password)
         if (user === null || !passwordMatch) {
           return res.status(400).json({ error: 'Invalid user or password' })
         }
