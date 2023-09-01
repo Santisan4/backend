@@ -32,7 +32,7 @@ const userController = {
           name: result.data.name,
           email: result.data.email,
           password: passwordHash,
-          admin: 0
+          admin: 2
         }
 
         db.users.create(newUser)
@@ -72,7 +72,7 @@ const userController = {
           admin: user.dataValues.admin
         }
 
-        const token = jwt.sign(userForToken, 'teomilo', { expiresIn: 60 * 60 * 24 * 7 })
+        const token = jwt.sign(userForToken, process.env.SECRET, { expiresIn: 60 * 60 * 24 * 7 })
 
         return res.status(200).json({
           id: userForToken.id,
