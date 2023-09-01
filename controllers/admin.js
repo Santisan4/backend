@@ -13,6 +13,7 @@ const adminController = {
             title: product.dataValues.title,
             description: product.dataValues.description,
             price: product.dataValues.price,
+            category: product.dataValues.category,
             image_id: product.dataValues.image_id
           }
         })
@@ -32,6 +33,7 @@ const adminController = {
                 title: product.title,
                 description: product.description,
                 price: product.price,
+                category: product.category,
                 image: image.url
               }
             })
@@ -53,7 +55,7 @@ const adminController = {
         title: req.body.title,
         description: req.body.description,
         price: Number(req.body.price),
-        category: Number(req.body.category)
+        category: req.body.category
       }
 
       const result = validateProduct(reqBody)

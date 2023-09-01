@@ -8,7 +8,7 @@ const productSchema = z.object({
     invalid_type_error: 'Description must be a string'
   }).optional(),
   price: z.number().nonnegative().optional(),
-  category: z.number().optional(),
+  category: z.string().optional(),
   stock: z.number().nonnegative().optional()
 })
 

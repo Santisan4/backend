@@ -1,7 +1,7 @@
-const jwt = require('jsonwebtoken')
 const db = require('../database/models/index.js')
-const { validateProduct } = require('../middleware/validations/product.js')
-const { uploadFile, deleteImage } = require('../utils/cloudinary.js')
+// const jwt = require('jsonwebtoken')
+// const { validateProduct } = require('../middleware/validations/product.js')
+// const { uploadFile, deleteImage } = require('../utils/cloudinary.js')
 
 const productController = {
   getAll: (req, res) => {
@@ -13,6 +13,7 @@ const productController = {
             title: product.dataValues.title,
             description: product.dataValues.description,
             price: product.dataValues.price,
+            category: product.dataValues.category,
             image_id: product.dataValues.image_id
           }
         })
@@ -66,6 +67,7 @@ const productController = {
               title: product.dataValues.title,
               description: product.dataValues.description,
               price: product.dataValues.price,
+              category: product.dataValues.category,
               image: image.dataValues.image_url
             }
 
@@ -78,180 +80,180 @@ const productController = {
       .catch(err => {
         return res.status(400).json({ error: err })
       })
-  },
-
-  create: async (req, res) => {
-    try {
-      const reqBody = {
-        title: req.body.title,
-        description: req.body.description,
-        price: Number(req.body.price),
-        image: req.file.path
-      }
-
-      const authorization = req.get('authorization')
-      let token = null
-
-      if (authorization && authorization.toLowerCase().startsWith('bearer')) {
-        token = authorization.substring(7)
-      }
-
-      const decodedToken = jwt.verify(token, process.env.SECRET)
-
-      if (!token || !decodedToken.id) {
-        return res.status(401).json({ error: 'token missing or invalid' })
-      }
-
-      const result = validateProduct(reqBody)
-
-      if (result.error) {
-        return res.status(400).json({ error: JSON.parse(result.error.message) })
-      }
-
-      const resultImage = await uploadFile(req.file.path)
-
-      const imageProduct = {
-        public_id: resultImage.public_id,
-        image_url: resultImage.secure_url,
-        format: resultImage.format
-      }
-
-      db.images.create(imageProduct)
-        .then(image => {
-          const imageID = Number(image.dataValues.id)
-          const newProduct = {
-            ...result.data,
-            image_id: imageID,
-            stock: 1
-          }
-
-          db.products.create(newProduct)
-            .then(product => {
-              return res.status(201).json(product)
-            })
-            .catch(err => {
-              return res.status(400).json({ error: err })
-            })
-        })
-        .catch(err => {
-          return res.status(400).json({ error: err })
-        })
-    } catch (err) {
-      return res.status(500).json({ message: err.message })
-    }
-  },
-
-  delete: (req, res) => {
-    const id = req.params.id
-
-    db.products.findOne({
-      where: {
-        id
-      }
-    })
-      .then(product => {
-        const imageID = product.dataValues.image_id
-        db.images.findOne({
-          where: {
-            id: imageID
-          }
-        })
-          .then(async image => {
-            const publicIdImage = image.dataValues.public_id
-            await deleteImage(publicIdImage)
-            db.images.destroy({
-              where: {
-                id: imageID
-              }
-            })
-              .then(() => {
-                db.products.destroy({
-                  where: {
-                    id
-                  }
-                })
-                  .then(() => {
-                    return res.status(200).json({ message: 'Product deleted' })
-                  })
-                  .catch(err => {
-                    return res.status(400).json({ error: err })
-                  })
-              })
-              .catch(err => {
-                return res.status(400).json({ error: err })
-              })
-          })
-      })
-      .catch(err => {
-        return res.status(400).json({ error: err })
-      })
-  },
-
-  update: (req, res) => {
-    const id = req.params.id
-
-    const fieldsToUpdate = {
-      title: req.body.title,
-      description: req.body.description,
-      price: Number(req.body.price)
-    }
-
-    db.products.findOne({
-      where: {
-        id
-      }
-    })
-      .then(product => {
-        const imageID = product.dataValues.image_id
-
-        db.images.findOne({
-          where: {
-            id: imageID
-          }
-        })
-          .then(async image => {
-            const publicIdImage = image.dataValues.public_id
-            await deleteImage(publicIdImage)
-
-            const result = await uploadFile(req.file.path)
-
-            const imageProduct = {
-              public_id: result.public_id,
-              image_url: result.secure_url,
-              format: result.format
-            }
-
-            db.images.update(imageProduct, {
-              where: {
-                id: imageID
-              }
-            })
-              .then(() => {
-                fieldsToUpdate.image_id = imageID
-                db.products.update(fieldsToUpdate, {
-                  where: {
-                    id
-                  }
-                })
-                  .then(() => {
-                    return res.status(200).json({ message: 'Product updated' })
-                  })
-                  .catch(err => {
-                    return res.status(400).json({ error: err })
-                  })
-              })
-              .catch(err => {
-                return res.status(400).json({ error: err })
-              })
-          })
-          .catch(err => {
-            return res.status(400).json({ error: err })
-          })
-      })
-      .catch(err => {
-        return res.status(400).json({ error: err })
-      })
   }
+
+  // create: async (req, res) => {
+  //   try {
+  //     const reqBody = {
+  //       title: req.body.title,
+  //       description: req.body.description,
+  //       price: Number(req.body.price),
+  //       image: req.file.path
+  //     }
+
+  //     const authorization = req.get('authorization')
+  //     let token = null
+
+  //     if (authorization && authorization.toLowerCase().startsWith('bearer')) {
+  //       token = authorization.substring(7)
+  //     }
+
+  //     const decodedToken = jwt.verify(token, process.env.SECRET)
+
+  //     if (!token || !decodedToken.id) {
+  //       return res.status(401).json({ error: 'token missing or invalid' })
+  //     }
+
+  //     const result = validateProduct(reqBody)
+
+  //     if (result.error) {
+  //       return res.status(400).json({ error: JSON.parse(result.error.message) })
+  //     }
+
+  //     const resultImage = await uploadFile(req.file.path)
+
+  //     const imageProduct = {
+  //       public_id: resultImage.public_id,
+  //       image_url: resultImage.secure_url,
+  //       format: resultImage.format
+  //     }
+
+  //     db.images.create(imageProduct)
+  //       .then(image => {
+  //         const imageID = Number(image.dataValues.id)
+  //         const newProduct = {
+  //           ...result.data,
+  //           image_id: imageID,
+  //           stock: 1
+  //         }
+
+  //         db.products.create(newProduct)
+  //           .then(product => {
+  //             return res.status(201).json(product)
+  //           })
+  //           .catch(err => {
+  //             return res.status(400).json({ error: err })
+  //           })
+  //       })
+  //       .catch(err => {
+  //         return res.status(400).json({ error: err })
+  //       })
+  //   } catch (err) {
+  //     return res.status(500).json({ message: err.message })
+  //   }
+  // },
+
+  // delete: (req, res) => {
+  //   const id = req.params.id
+
+  //   db.products.findOne({
+  //     where: {
+  //       id
+  //     }
+  //   })
+  //     .then(product => {
+  //       const imageID = product.dataValues.image_id
+  //       db.images.findOne({
+  //         where: {
+  //           id: imageID
+  //         }
+  //       })
+  //         .then(async image => {
+  //           const publicIdImage = image.dataValues.public_id
+  //           await deleteImage(publicIdImage)
+  //           db.images.destroy({
+  //             where: {
+  //               id: imageID
+  //             }
+  //           })
+  //             .then(() => {
+  //               db.products.destroy({
+  //                 where: {
+  //                   id
+  //                 }
+  //               })
+  //                 .then(() => {
+  //                   return res.status(200).json({ message: 'Product deleted' })
+  //                 })
+  //                 .catch(err => {
+  //                   return res.status(400).json({ error: err })
+  //                 })
+  //             })
+  //             .catch(err => {
+  //               return res.status(400).json({ error: err })
+  //             })
+  //         })
+  //     })
+  //     .catch(err => {
+  //       return res.status(400).json({ error: err })
+  //     })
+  // },
+
+  // update: (req, res) => {
+  //   const id = req.params.id
+
+  //   const fieldsToUpdate = {
+  //     title: req.body.title,
+  //     description: req.body.description,
+  //     price: Number(req.body.price)
+  //   }
+
+  //   db.products.findOne({
+  //     where: {
+  //       id
+  //     }
+  //   })
+  //     .then(product => {
+  //       const imageID = product.dataValues.image_id
+
+  //       db.images.findOne({
+  //         where: {
+  //           id: imageID
+  //         }
+  //       })
+  //         .then(async image => {
+  //           const publicIdImage = image.dataValues.public_id
+  //           await deleteImage(publicIdImage)
+
+  //           const result = await uploadFile(req.file.path)
+
+  //           const imageProduct = {
+  //             public_id: result.public_id,
+  //             image_url: result.secure_url,
+  //             format: result.format
+  //           }
+
+  //           db.images.update(imageProduct, {
+  //             where: {
+  //               id: imageID
+  //             }
+  //           })
+  //             .then(() => {
+  //               fieldsToUpdate.image_id = imageID
+  //               db.products.update(fieldsToUpdate, {
+  //                 where: {
+  //                   id
+  //                 }
+  //               })
+  //                 .then(() => {
+  //                   return res.status(200).json({ message: 'Product updated' })
+  //                 })
+  //                 .catch(err => {
+  //                   return res.status(400).json({ error: err })
+  //                 })
+  //             })
+  //             .catch(err => {
+  //               return res.status(400).json({ error: err })
+  //             })
+  //         })
+  //         .catch(err => {
+  //           return res.status(400).json({ error: err })
+  //         })
+  //     })
+  //     .catch(err => {
+  //       return res.status(400).json({ error: err })
+  //     })
+  // }
 }
 
 module.exports = productController

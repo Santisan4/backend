@@ -12,7 +12,7 @@ const productSchema = z.object({
   price: z.number({
     required_error: 'Price is required'
   }).nonnegative(),
-  category: z.number({
+  category: z.string({
     required_error: 'Category is required'
   })
 })
