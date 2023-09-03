@@ -64,6 +64,7 @@ const productController = {
         })
           .then(image => {
             const productData = {
+              id: product.dataValues.id,
               title: product.dataValues.title,
               description: product.dataValues.description,
               price: product.dataValues.price,
