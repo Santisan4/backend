@@ -34,7 +34,6 @@ app.use('/admin', adminRouter)
 app.use('/user', userRouter)
 app.use('/products', productRouter)
 
-const __dirname = path.resolve()
 app.use(express.static(path.join(__dirname, '/frontend/build')))
 
 app.get('*', (req, res) => {
