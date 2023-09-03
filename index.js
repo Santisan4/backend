@@ -1,6 +1,5 @@
 const express = require('express')
 const cors = require('cors')
-const path = require('node:path')
 
 const productRouter = require('./routes/product.js')
 const userRouter = require('./routes/user.js')
@@ -33,12 +32,6 @@ app.use(express.json())
 app.use('/admin', adminRouter)
 app.use('/user', userRouter)
 app.use('/products', productRouter)
-
-app.use(express.static(path.join(__dirname, '..', '/frontend/dist')))
-
-app.get('*', (req, res) => {
-  res.sendFile(path.resolve(__dirname, '..', 'frontend', 'dist', 'index.html'))
-})
 
 // 404 not found
 app.use((req, res, next) => {
