@@ -60,6 +60,8 @@ const adminController = {
         category: req.body.category
       }
 
+      console.log(req.body)
+
       const result = validateProduct(reqBody)
 
       if (result.error) {
