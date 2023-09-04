@@ -1,7 +1,4 @@
 const db = require('../database/models/index.js')
-// const jwt = require('jsonwebtoken')
-// const { validateProduct } = require('../middleware/validations/product.js')
-// const { uploadFile, deleteImage } = require('../utils/cloudinary.js')
 
 const productController = {
   getAll: (req, res) => {
