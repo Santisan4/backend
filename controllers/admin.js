@@ -66,6 +66,8 @@ const adminController = {
         return res.status(400).json({ error: JSON.parse(result.error.message) })
       }
 
+      console.log(req.file)
+
       if (!req.file) {
         return res.status(400).json({ error: 'Image is required' })
       }
