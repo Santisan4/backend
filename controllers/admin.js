@@ -74,6 +74,8 @@ const adminController = {
         format: resultImage.format
       }
 
+      console.log(resultImage)
+
       db.images.create(imageProduct)
         .then(image => {
           const imageID = Number(image.dataValues.id)
