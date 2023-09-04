@@ -35,10 +35,6 @@ app.use(morgan('dev'))
 
 app.disable('x-powered-by')
 
-app.get('/ping', (req, res) => {
-  return res.json({ message: 'pong' })
-})
-
 app.use('/admin', adminRouter)
 app.use('/user', userRouter)
 app.use('/products', productRouter)
