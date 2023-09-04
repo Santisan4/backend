@@ -66,12 +66,7 @@ const adminController = {
         return res.status(400).json({ error: JSON.parse(result.error.message) })
       }
 
-      console.log(req.file)
-      console.log(req.file.path)
-
       const resultImage = await uploadFile(req.file.path)
-
-      console.log(resultImage)
 
       const imageProduct = {
         public_id: resultImage.public_id,
