@@ -62,49 +62,53 @@ const adminController = {
 
       console.log(req.body)
 
-      const result = validateProduct(reqBody)
+      try {
+        const result = validateProduct(reqBody)
 
-      if (result.error) {
-        return res.status(400).json({ error: JSON.parse(result.error.message) })
+        if (result.error) {
+          return res.status(400).json({ error: JSON.parse(result.error.message) })
+        }
+
+        console.log(req.file)
+
+        if (!req.file) {
+          return res.status(400).json({ error: 'Image is required' })
+        }
+
+        const resultImage = await uploadFile(req.file.path)
+
+        const imageProduct = {
+          public_id: resultImage.public_id,
+          image_url: resultImage.secure_url,
+          format: resultImage.format
+        }
+
+        console.log(resultImage)
+
+        db.images.create(imageProduct)
+          .then(image => {
+            const imageID = Number(image.dataValues.id)
+
+            const newProduct = {
+              ...result.data,
+              image_id: imageID,
+              stock: 1
+            }
+
+            db.products.create(newProduct)
+              .then(product => {
+                return res.status(201).json(product)
+              })
+              .catch(err => {
+                return res.status(400).json({ error: err })
+              })
+          })
+          .catch(err => {
+            return res.status(400).json({ error: err })
+          })
+      } catch (err) {
+        return res.status(400).json({ error: err })
       }
-
-      console.log(req.file)
-
-      if (!req.file) {
-        return res.status(400).json({ error: 'Image is required' })
-      }
-
-      const resultImage = await uploadFile(req.file.path)
-
-      const imageProduct = {
-        public_id: resultImage.public_id,
-        image_url: resultImage.secure_url,
-        format: resultImage.format
-      }
-
-      console.log(resultImage)
-
-      db.images.create(imageProduct)
-        .then(image => {
-          const imageID = Number(image.dataValues.id)
-
-          const newProduct = {
-            ...result.data,
-            image_id: imageID,
-            stock: 1
-          }
-
-          db.products.create(newProduct)
-            .then(product => {
-              return res.status(201).json(product)
-            })
-            .catch(err => {
-              return res.status(400).json({ error: err })
-            })
-        })
-        .catch(err => {
-          return res.status(400).json({ error: err })
-        })
     } catch (err) {
       return res.status(500).json({ message: err.message })
     }
