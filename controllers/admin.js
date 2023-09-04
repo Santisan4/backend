@@ -66,6 +66,10 @@ const adminController = {
         return res.status(400).json({ error: JSON.parse(result.error.message) })
       }
 
+      if (!req.file) {
+        return res.status(400).json({ error: 'Image is required' })
+      }
+
       const resultImage = await uploadFile(req.file.path)
 
       const imageProduct = {

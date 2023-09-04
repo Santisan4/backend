@@ -10,7 +10,7 @@ cloudinary.config({
 
 async function uploadFile (file) {
   return await cloudinary.uploader.upload(file, {
-    folder: '/tiendaEos/products'
+    folder: 'tiendaEos/products'
   })
 }
 

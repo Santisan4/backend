@@ -4,14 +4,14 @@ const isAuth = require('../middleware/isAuth.js')
 const adminController = require('../controllers/admin.js')
 const upload = require('../middleware/multer/products.js')
 
+// create
+router.post('/products', isAuth, isAdmin, upload.single('image'), adminController.createProduct)
+
 // get all
 router.get('/products', isAuth, isAdmin, adminController.getProducts)
 
 // get one
 router.get('/products/:id', isAuth, isAdmin, adminController.getOneProduct)
-
-// create
-router.post('/products', isAuth, isAdmin, upload.single('image'), adminController.createProduct)
 
 // update
 router.patch('/products/:id', isAuth, isAdmin, upload.single('image'), adminController.updateProduct)
