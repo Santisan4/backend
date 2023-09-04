@@ -29,6 +29,8 @@ const productController = {
                 id: product.id,
                 title: product.title,
                 description: product.description,
+                category: product.category,
+                stock: product.stock,
                 price: product.price,
                 image: image.url
               }
