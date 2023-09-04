@@ -11,6 +11,7 @@ app.use(cors({
   origin: (origin, callback) => {
     const ACCEPTED_ORIGINS = [
       'http://localhost:5173',
+      'https://hoppscotch.io/',
       'https://tiendaeos.vercel.app',
       'https://frontend-d6a1ro3fz-santisan4.vercel.app/',
       'https://frontend-git-main-santisan4.vercel.app/'
