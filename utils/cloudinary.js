@@ -9,9 +9,8 @@ cloudinary.config({
 })
 
 async function uploadFile (file) {
-  const folder = process.env.NODE_ENV === 'development' ? '/development/tienda/products' : '/tienda/products'
   return await cloudinary.uploader.upload(file, {
-    folder
+    folder: '/tiendaEos/products'
   })
 }
 
