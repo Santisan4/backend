@@ -53,6 +53,7 @@ const adminController = {
 
   createProduct: async (req, res) => {
     try {
+      console.log(req.body)
       const reqBody = {
         title: req.body.title,
         description: req.body.description,
