@@ -40,6 +40,12 @@ function usersData (sequelize, DataTypes) {
     })
   }
 
+  users.associate = function (models) {
+    users.hasMany(models.orders, {
+      foreignKey: 'id'
+    })
+  }
+
   return users
 }
 

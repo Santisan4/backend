@@ -1,8 +1,10 @@
 require('dotenv').config()
+const jwt = require('jsonwebtoken')
+const bcrypt = require('bcrypt')
+const mercadopago = require('mercadopago')
+
 const db = require('../database/models')
 const { validateUser } = require('../middleware/validations/register.js')
-const bcrypt = require('bcrypt')
-const jwt = require('jsonwebtoken')
 
 const userController = {
   create: async (req, res) => {
@@ -83,27 +85,55 @@ const userController = {
         })
       })
       .catch(err => {
+        console.log(err)
         return res.status(400).json({ error: 'email does not exists' })
       })
   },
 
-  checkout: (req, res) => {
-    const idUser = req.params.id
-    const { quantity, total } = req.body
+  payment: async (req, res) => {
+    const { title, quantity, price } = req.body
+    mercadopago.configure({
+      access_token: process.env.MP_ACCESS_TOKEN
+    })
 
-    const newOrder = {
-      user_id: idUser,
-      quantity: Number(quantity),
-      total
+    try {
+      const result = await mercadopago.preferences.create({
+        items: [
+          {
+            title,
+            unit_price: price,
+            currency_id: 'ARS',
+            quantity
+          }
+        ],
+        back_urls: {
+          success: 'http://localhost:3000/payment/success',
+          failure: 'http://localhost:3000/payment/failure',
+          pending: 'http://localhost:3000/payment/pending'
+        },
+        notification_url: 'https://bd86-181-111-4-229.ngrok-free.app/payment/webhook'
+      })
+
+      return res.status(200).json(result.body)
+    } catch (err) {
+      console.log(err)
+      return res.status(500).json({ error: err.message })
     }
+    // const { quantity, total } = req.body
 
-    db.orders.create(newOrder)
-      .then(response => {
-        return res.status(201).json(response)
-      })
-      .catch(err => {
-        return res.status(400).json({ error: err })
-      })
+    // const newOrder = {
+    //   user_id: idUser,
+    //   quantity: Number(quantity),
+    //   total
+    // }
+
+    // db.orders.create(newOrder)
+    //   .then(response => {
+    //     return res.status(201).json(response)
+    //   })
+    //   .catch(err => {
+    //     return res.status(400).json({ error: err })
+    //   })
   },
 
   getOrders: (req, res) => {

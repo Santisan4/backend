@@ -4,7 +4,7 @@ const userController = require('../controllers/user.js')
 const isAuth = require('../middleware/isAuth.js')
 
 router.post('/', userController.create)
-router.post('/:id/checkout', isAuth, userController.checkout)
+router.post('/payment', isAuth, userController.payment)
 router.post('/login', userController.login)
 router.get('/:id/orders', userController.getOrders)
 

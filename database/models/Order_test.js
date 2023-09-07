@@ -1,13 +1,13 @@
-function ordersData (sequelize, DataTypes) {
-  const alias = 'orders'
+function ordersTestData (sequelize, DataTypes) {
+  const alias = 'orders_test'
   const cols = {
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true
     },
-    user_id: {
-      type: DataTypes.INTEGER
+    user_email: {
+      type: DataTypes.STRING(100)
     },
     order_id: {
       type: DataTypes.STRING(100)
@@ -28,14 +28,9 @@ function ordersData (sequelize, DataTypes) {
 
   const config = { timestamps: false }
 
-  const orders = sequelize.define(alias, cols, config)
+  const orderstest = sequelize.define(alias, cols, config)
 
-  orders.associate = function (models) {
-    orders.belongsTo(models.users, {
-      foreignKey: 'user_id'
-    })
-  }
-  return orders
+  return orderstest
 }
 
-module.exports = ordersData
+module.exports = ordersTestData
