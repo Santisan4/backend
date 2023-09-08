@@ -130,6 +130,7 @@ const userController = {
     try {
       if (payment.type === 'payment') {
         const data = await mercadopago.payment.findById(payment['data.id'])
+        console.log(data)
         const order = {
           user_email: data.body.payer.email,
           order_id: data.body.order.id,
