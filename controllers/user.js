@@ -114,7 +114,7 @@ const userController = {
           failure: 'https://tiendaeos-dev.fl0.io/user/failure',
           pending: 'https://tiendaeos-dev.fl0.io/user/pending'
         },
-        notification_url: 'https://tiendaeos-dev.fl0.io/payment/webhook'
+        notification_url: 'https://tiendaeos-dev.fl0.io/user/webhook'
       })
 
       return res.status(200).json(result.body)

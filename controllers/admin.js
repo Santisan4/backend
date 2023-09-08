@@ -277,7 +277,7 @@ const adminController = {
   },
 
   getOrders: (req, res) => {
-    db.pruebas.findAll()
+    db.orders.findAll()
       .then(orders => {
         return res
           .status(200)
