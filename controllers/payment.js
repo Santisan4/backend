@@ -48,7 +48,6 @@ const paymentController = {
         const order = {
           order_id: data.body.order.id,
           order_type: data.body.order.type,
-          // description: data.body.description,
           currency: data.body.currency_id,
           user: data.body.payer.email,
           amout: data.body.transaction_amount

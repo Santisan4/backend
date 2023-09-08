@@ -1,5 +1,6 @@
-function ordersTestData (sequelize, DataTypes) {
-  const alias = 'orders_test'
+function pruebasData (sequelize, DataTypes) {
+  const alias = 'pruebas'
+
   const cols = {
     id: {
       type: DataTypes.INTEGER,
@@ -28,9 +29,9 @@ function ordersTestData (sequelize, DataTypes) {
 
   const config = { timestamps: false }
 
-  const orderstest = sequelize.define(alias, cols, config)
+  const pruebas = sequelize.define(alias, cols, config)
 
-  return orderstest
+  return pruebas
 }
 
-module.exports = ordersTestData
+module.exports = pruebasData

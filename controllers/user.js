@@ -91,27 +91,30 @@ const userController = {
   },
 
   payment: async (req, res) => {
-    const { title, quantity, price } = req.body
+    const cartFromUser = req.body
+
+    const items = cartFromUser.map(item => {
+      return {
+        title: item.title,
+        unit_price: item.price,
+        quantity: item.quantity,
+        currency_id: 'ARS'
+      }
+    })
+
     mercadopago.configure({
       access_token: process.env.MP_ACCESS_TOKEN
     })
 
     try {
       const result = await mercadopago.preferences.create({
-        items: [
-          {
-            title,
-            unit_price: price,
-            currency_id: 'ARS',
-            quantity
-          }
-        ],
+        items,
         back_urls: {
-          success: 'http://localhost:3000/payment/success',
-          failure: 'http://localhost:3000/payment/failure',
-          pending: 'http://localhost:3000/payment/pending'
+          success: 'http://localhost:3000/user/success',
+          failure: 'http://localhost:3000/user/failure',
+          pending: 'http://localhost:3000/user/pending'
         },
-        notification_url: 'https://bd86-181-111-4-229.ngrok-free.app/payment/webhook'
+        notification_url: 'https://7918-181-111-4-229.ngrok-free.app/user/webhook'
       })
 
       return res.status(200).json(result.body)
@@ -119,21 +122,39 @@ const userController = {
       console.log(err)
       return res.status(500).json({ error: err.message })
     }
-    // const { quantity, total } = req.body
+  },
 
-    // const newOrder = {
-    //   user_id: idUser,
-    //   quantity: Number(quantity),
-    //   total
-    // }
+  webhook: async (req, res) => {
+    const payment = req.query
 
-    // db.orders.create(newOrder)
-    //   .then(response => {
-    //     return res.status(201).json(response)
-    //   })
-    //   .catch(err => {
-    //     return res.status(400).json({ error: err })
-    //   })
+    try {
+      if (payment.type === 'payment') {
+        const data = await mercadopago.payment.findById(payment['data.id'])
+        const order = {
+          user_email: 'pruba@prueba.com',
+          order_id: data.body.order.id,
+          order_type: data.body.order.type,
+          currency: data.body.currency_id,
+          user: data.body.payer.email,
+          // amount: data.body.transaction_amount
+          amount: data.body.transaction_details.total_paid_amount
+        }
+        // store in database
+        db.pruebas.create(order)
+          .then(order => {
+            console.log('pago aprobado')
+            return res.status(201).json(order)
+          })
+          .catch(err => {
+            console.log(err)
+            return res.status(400).json({ error: err })
+          })
+      }
+      console.log('aun no se procesa el pago')
+    } catch (err) {
+      console.log(err)
+      return res.status(500).json({ error: err.message })
+    }
   },
 
   getOrders: (req, res) => {

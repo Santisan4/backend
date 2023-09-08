@@ -23,4 +23,7 @@ router.delete('/products/:id', isAuth, isAdmin, adminController.deleteProduct) /
 // get all
 router.get('/users', isAuth, isAdmin, adminController.getUsers)
 
+// ORDERS
+router.get('/orders', isAuth, isAdmin, adminController.getOrders)
+
 module.exports = router

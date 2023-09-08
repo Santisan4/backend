@@ -274,6 +274,21 @@ const adminController = {
       .catch(err => {
         return res.status(400).json({ error: err })
       })
+  },
+
+  getOrders: (req, res) => {
+    db.pruebas.findAll()
+      .then(orders => {
+        return res
+          .status(200)
+          .json(orders)
+      })
+      .catch(err => {
+        console.log(err)
+        return res
+          .status(400)
+          .json({ error: err })
+      })
   }
 }
 
