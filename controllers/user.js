@@ -110,11 +110,11 @@ const userController = {
       const result = await mercadopago.preferences.create({
         items,
         back_urls: {
-          success: 'http://localhost:3000/user/success',
-          failure: 'http://localhost:3000/user/failure',
-          pending: 'http://localhost:3000/user/pending'
+          success: 'https://tiendaeos-dev.fl0.io/user/success',
+          failure: 'https://tiendaeos-dev.fl0.io/user/failure',
+          pending: 'https://tiendaeos-dev.fl0.io/user/pending'
         },
-        notification_url: 'https://7918-181-111-4-229.ngrok-free.app/user/webhook'
+        notification_url: 'https://tiendaeos-dev.fl0.io/payment/webhook'
       })
 
       return res.status(200).json(result.body)
@@ -131,19 +131,38 @@ const userController = {
       if (payment.type === 'payment') {
         const data = await mercadopago.payment.findById(payment['data.id'])
         const order = {
-          user_email: 'pruba@prueba.com',
+          user_email: data.body.payer.email,
           order_id: data.body.order.id,
           order_type: data.body.order.type,
           currency: data.body.currency_id,
-          user: data.body.payer.email,
           // amount: data.body.transaction_amount
           amount: data.body.transaction_details.total_paid_amount
         }
         // store in database
-        db.pruebas.create(order)
-          .then(order => {
-            console.log('pago aprobado')
-            return res.status(201).json(order)
+        db.users.findOne({
+          where: {
+            email: order.user_email
+          }
+        })
+          .then(user => {
+            if (!user) {
+              return res.status(400).json({ error: 'user not found' })
+            }
+
+            db.orders.create({
+              user_id: user.dataValues.id,
+              order_id: order.order_id,
+              order_type: order.order_type,
+              amount: order.amount,
+              currency: order.currency
+            })
+              .then(order => {
+                return res.status(201).json(order)
+              })
+              .catch(err => {
+                console.log(err)
+                return res.status(400).json({ error: err })
+              })
           })
           .catch(err => {
             console.log(err)
