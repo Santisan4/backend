@@ -103,7 +103,7 @@ const userController = {
     })
 
     mercadopago.configure({
-      access_token: process.env.MP_ACCESS_TOKEN_TEST
+      access_token: process.env.MP_ACCESS_TOKEN
     })
 
     try {
