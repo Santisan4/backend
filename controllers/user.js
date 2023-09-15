@@ -103,10 +103,21 @@ const userController = {
     })
 
     mercadopago.configure({
-      access_token: process.env.MP_ACCESS_TOKEN
+      access_token: process.env.MP_ACCESS_TOKEN_TEST
     })
 
     try {
+      // DEVELOPMENT
+      // const result = await mercadopago.preferences.create({
+      //   items,
+      //   back_urls: {
+      //     success: 'http://localhost:3000/user/success',
+      //     failure: 'http://localhost:3000/user/failure',
+      //     pending: 'http://localhost:3000/user/pending'
+      //   },
+      //   notification_url: 'https://f98a-181-111-5-127.ngrok-free.app/user/webhook'
+      // })
+      // PRODUCTION
       const result = await mercadopago.preferences.create({
         items,
         back_urls: {
@@ -126,67 +137,93 @@ const userController = {
 
   webhook: async (req, res) => {
     const payment = req.query
-
     try {
       if (payment.type === 'payment') {
         const data = await mercadopago.payment.findById(payment['data.id'])
-        console.log(data)
-        const order = {
-          user_email: data.body.payer.email,
-          order_id: data.body.order.id,
-          order_type: data.body.order.type,
-          currency: data.body.currency_id,
-          // amount: data.body.transaction_amount
-          amount: data.body.transaction_details.total_paid_amount
-        }
-        // store in database
-        db.users.findOne({
-          where: {
-            email: order.user_email
+        if (data.body.status === 'approved' && data.body.status_detail === 'accredited') {
+          const order = {
+            user_email: data.body.payer.email,
+            order_id: data.body.order.id,
+            order_type: data.body.order.type,
+            currency: data.body.currency_id,
+            amount: data.body.transaction_amount
           }
-        })
-          .then(user => {
-            if (!user) {
-              return res.status(400).json({ error: 'user not found' })
+          // store in database
+          // DEVELOPMENT
+          // db.pruebas.create(order)
+          //   .then(order => {
+          //     console.log('order created')
+          //     return res.status(201).json(order)
+          //   })
+          //   .catch(err => {
+          //     console.log(err)
+          //     return res.status(400).json({ error: err })
+          //   })
+          // PRODUCTION
+          db.users.findOne({
+            where: {
+              email: order.user_email
             }
+          })
+            .then(user => {
+              if (!user) {
+                return res.status(400).json({ error: 'user not found' })
+              }
 
-            db.orders.create({
-              user_id: user.dataValues.id,
-              order_id: order.order_id,
-              order_type: order.order_type,
-              amount: order.amount,
-              currency: order.currency
+              db.orders.create({
+                user_id: user.dataValues.id,
+                order_id: order.order_id,
+                order_type: order.order_type,
+                amount: order.amount,
+                currency: order.currency
+              })
+                .then(order => {
+                  return res.status(201).json(order)
+                })
+                .catch(err => {
+                  console.log(err)
+                  return res.status(400).json({ error: err })
+                })
             })
-              .then(order => {
-                return res.status(201).json(order)
-              })
-              .catch(err => {
-                console.log(err)
-                return res.status(400).json({ error: err })
-              })
-          })
-          .catch(err => {
-            console.log(err)
-            return res.status(400).json({ error: err })
-          })
+            .catch(err => {
+              console.log(err)
+              return res.status(400).json({ error: err })
+            })
+        } else {
+          return res.status(400).json({ message: 'payment not approved' })
+        }
       }
-      console.log('aun no se procesa el pago')
     } catch (err) {
       console.log(err)
+      console.log('error webhook')
       return res.status(500).json({ error: err.message })
     }
   },
 
-  getOrders: (req, res) => {
-    const userId = req.params.id
+  getOrderByUser: (req, res) => {
+    const { name } = req.params
 
-    db.orders.findAll({
+    db.users.findOne({
       where: {
-        user_id: userId
+        name
       }
     })
-      .then(orders => {
-        return res.status(200).json(orders)
+      .then(user => {
+        if (!user) {
+          return res.status(400).json({ error: 'user not found' })
+        }
+
+        db.orders.findAll({
+          where: {
+            user_id: user.id
+          }
+        })
+          .then(orders => {
+            return res.status(200).json(orders)
+          })
+          .catch(err => {
+            return res.status(400).json({ error: err })
+          })
       })
       .catch(err => {
         return res.status(400).json({ error: err })
